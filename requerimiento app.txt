@@ -1,0 +1,22 @@
+Requerimiento "La Metodología "Mastery Loop"
+Propuesta de valor: Un "Entrenador CMRP" inteligente que no solo simula el examen, sino que aplica una metodología de estudio de alto rendimiento denominada Mastery Loop, diseñada para garantizar el dominio de los 5 pilares en tiempo récord.
+
+Metodología de Estudio Aplicada:
+Diagnóstico Estratificado: Evaluación inicial para identificar brechas no solo de datos, sino de razonamiento por cada pilar de la SMRP.
+Aprendizaje Activo Basado en Evidencia (RAG): El tutor IA no da respuestas genéricas; obliga al usuario a confrontar el error con la bibliografía técnica cargada, creando una conexión neuronal más fuerte.
+Repetición Espaciada Adaptativa: Generación automática de Flashcards (Anki style) y mini-exámenes que reaparecen en intervalos óptimos basándose en el nivel de dificultad que representó para el usuario.
+Simulacro de Inmersión Total: Entrenamiento de la resistencia mental con cronómetro de 2.5 horas para mitigar la fatiga cognitiva el día del examen real.
+Flujo principal (Happy Path):
+
+Entrada y Diagnóstico: El usuario realiza un examen de simulación inicial (110 preguntas, 2.5 horas) para medir su nivel base en los 5 pilares.
+Evaluación Detallada: El sistema califica y genera un informe de fallos por pilar, identificando vacíos de conocimiento específicos.
+Reforzamiento con Tutor IA: La IA explica cada error citando la documentación técnica (PDFs) y genera mini-exámenes de refuerzo.
+Ciclo de Mejora: El usuario utiliza Flashcards automáticas generadas por IA y sigue un plan de estudio personalizado hasta la fecha del examen.
+
+Necesidades espescíficas
+1. Entra a la app, debe solicitar el primer examen de simulaciñon (completo basado en la SMRP, basado en el banco de preguntas que entregaré y que puede ser actualizado de acuerdo a lo que considere el administrador) para evaluar su nivel de conocimiento en los 5 pilares de manera homogenea.
+2. El sistema inicialmente utilizará un banco de preguntas de que proporcionará el administrador en base a una estructura que determine, el examen debe tener 110 preguntas que evaluen los 5 pilares de manera uniforme o recomendacion del adminstrador del porcentaje de preguntas por pilar. Existe un tiempo determinado para rendirlo que es de 2.5 horas. Evalua las respuestas, elabora un informe del resultado por pilar identificando las respuestas incorrectas 
+3. La IA explica explica usando las respuestas del banco de preguntas y si el usuario pide más detalle la IA explica el error usando la documentación cargada en la carpeta biblioteca e indicando un ejemplo. 
+4. la App con empleando la IA debe indicar específicamente los temas y pilares a repasar, estudiar y reforzar, empleando la docuemntación de la bibliteca. 
+5. la app debe disponer actulizado una base de datos y dashboard para que haga el seguimiento de avance del reforzamiento. 
+6. Cree una base de datos y dashboard para que haga el seguimiento de avance de cada simulación.

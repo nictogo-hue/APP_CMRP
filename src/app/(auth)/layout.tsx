@@ -5,61 +5,102 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Panel izquierdo - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-primary relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20">
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
-                <svg className="w-7 h-7 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold text-white">LexAgenda</span>
+      {/* Panel izquierdo — Metodología Mastery Loop */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gray-950 border-r border-gray-800 relative overflow-hidden">
+        {/* Fondo decorativo */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-gray-950 to-gray-950" />
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl" />
+
+        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16 py-12">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-10">
+            <div className="w-11 h-11 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
             </div>
-            <h1 className="text-display-md text-white mb-4">
-              Gestiona tus citas legales con profesionalismo
-            </h1>
-            <p className="text-lg text-white/70 leading-relaxed">
-              La plataforma de agendamiento diseñada específicamente para abogados y bufetes que valoran la excelencia y la eficiencia.
+            <div>
+              <h1 className="text-xl font-bold text-white">CMRP Mastery</h1>
+              <p className="text-xs text-gray-400">Certificación SMRP</p>
+            </div>
+          </div>
+
+          {/* Headline */}
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-white leading-tight mb-3">
+              Metodología<br />
+              <span className="text-blue-400">Mastery Loop</span>
+            </h2>
+            <p className="text-gray-400 leading-relaxed text-sm">
+              Un entrenador CMRP inteligente diseñado para garantizar el dominio de los 5 pilares SMRP en tiempo récord.
             </p>
           </div>
 
+          {/* Pasos del Mastery Loop */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3 text-white/80">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/30 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-blue-400 text-xs font-bold">1</span>
               </div>
-              <span>Agenda inteligente con recordatorios automáticos</span>
+              <div>
+                <p className="text-sm font-semibold text-white">Diagnóstico Estratificado</p>
+                <p className="text-xs text-gray-400 mt-0.5">Examen inicial de 110 preguntas para identificar brechas en los 5 pilares.</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3 text-white/80">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/30 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-blue-400 text-xs font-bold">2</span>
               </div>
-              <span>Gestión de clientes y expedientes</span>
+              <div>
+                <p className="text-sm font-semibold text-white">Aprendizaje Activo con RAG</p>
+                <p className="text-xs text-gray-400 mt-0.5">El Tutor IA confronta cada error con la bibliografía técnica de 22 libros CMRP.</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3 text-white/80">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/30 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-blue-400 text-xs font-bold">3</span>
               </div>
-              <span>Reportes y analíticas en tiempo real</span>
+              <div>
+                <p className="text-sm font-semibold text-white">Repetición Espaciada Adaptativa</p>
+                <p className="text-xs text-gray-400 mt-0.5">Flashcards y mini-exámenes que reaparecen en intervalos óptimos según tu nivel.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/30 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-blue-400 text-xs font-bold">4</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Simulacro de Inmersión Total</p>
+                <p className="text-xs text-gray-400 mt-0.5">2.5 horas cronometradas para entrenar la resistencia mental del día del examen real.</p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Stats */}
+          <div className="mt-10 pt-8 border-t border-gray-800 grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-400">296</p>
+              <p className="text-[11px] text-gray-500 mt-0.5">preguntas</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-400">22</p>
+              <p className="text-[11px] text-gray-500 mt-0.5">libros RAG</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-400">5</p>
+              <p className="text-[11px] text-gray-500 mt-0.5">pilares SMRP</p>
             </div>
           </div>
         </div>
-
-        {/* Decoración */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary-500/20 rounded-full blur-3xl" />
-        <div className="absolute top-20 right-20 w-64 h-64 bg-accent-500/20 rounded-full blur-3xl" />
       </div>
 
-      {/* Panel derecho - Formulario */}
+      {/* Panel derecho — Formulario */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           {children}

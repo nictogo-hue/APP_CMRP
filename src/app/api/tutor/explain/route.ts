@@ -3,6 +3,8 @@ import { streamText } from 'ai'
 import { google, MODELS } from '@/lib/ai/google'
 import { findRelevantChunks, formatContext } from '@/lib/ai/rag'
 
+export const runtime = 'edge'
+
 export async function POST(request: NextRequest) {
   const body = await request.json()
   const { questionText, options, correctAnswer, userAnswer, explanation } = body as {
@@ -17,10 +19,19 @@ export async function POST(request: NextRequest) {
     return new Response('Missing required fields', { status: 400 })
   }
 
-  // Build search query for RAG
+  // RAG con timeout de 5s
   const searchQuery = `${questionText} ${options[correctAnswer as keyof typeof options] ?? ''}`
-  const chunks = await findRelevantChunks(searchQuery, 0.35, 5)
-  const context = formatContext(chunks)
+  let context = ''
+  try {
+    const ragPromise = findRelevantChunks(searchQuery, 0.35, 5)
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('RAG timeout')), 5000)
+    )
+    const chunks = await Promise.race([ragPromise, timeoutPromise])
+    context = formatContext(chunks)
+  } catch {
+    context = ''
+  }
 
   const systemPrompt = `Eres el Tutor CMRP, un experto en mantenimiento y confiabilidad industrial con dominio del cuerpo de conocimiento SMRP y los 5 pilares CMRP. Tu rol es ayudar a candidatos a aprobar el examen de certificación CMRP.
 

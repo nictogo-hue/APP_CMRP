@@ -81,26 +81,11 @@ export default async function DashboardPage() {
         <h2 className="text-sm font-semibold text-foreground-secondary uppercase tracking-wider mb-3">
           Acciones rápidas
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <QuickAction
-            href="/exam/new"
-            icon="📋"
-            title="Iniciar Simulacro"
-            description="110 preguntas · 150 minutos"
-            primary
-          />
-          <QuickAction
-            href="/tutor"
-            icon="🤖"
-            title="Tutor IA"
-            description="Preguntas con RAG sobre PDFs CMRP"
-          />
-          <QuickAction
-            href="/analytics"
-            icon="📊"
-            title="Mi Progreso"
-            description="Análisis por los 5 pilares SMRP"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <QuickAction href="/exam/new" icon="📋" title="Simulacro" description="110 preguntas · 150 min" primary />
+          <QuickAction href="/tutor" icon="🤖" title="Tutor IA" description="RAG sobre 22 libros CMRP" />
+          <QuickAction href="/flashcards" icon="📇" title="Flashcards" description="Repetición espaciada SM-2" />
+          <QuickAction href="/analytics" icon="📊" title="Mi Progreso" description="Análisis por 5 pilares" />
         </div>
       </div>
 
@@ -154,20 +139,33 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Estado vacío */}
+      {/* Onboarding — diagnóstico inicial obligatorio */}
       {!analytics.hasData && (
-        <div className="text-center py-12 border border-dashed border-border rounded-xl">
-          <p className="text-4xl mb-3">🎯</p>
-          <h3 className="text-lg font-semibold text-foreground mb-1">Empieza tu preparación</h3>
-          <p className="text-sm text-foreground-secondary mb-4">
-            Completa tu primer simulacro para ver tus estadísticas aquí.
-          </p>
-          <Link
-            href="/exam/new"
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors"
-          >
-            Iniciar primer simulacro
-          </Link>
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/20 to-blue-900/20 border border-blue-500/30 rounded-2xl p-8 text-center">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-600/10 via-transparent to-transparent" />
+          <div className="relative z-10">
+            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-600/30">
+              <span className="text-3xl">🎯</span>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">
+              Bienvenido a CMRP Mastery
+            </h3>
+            <p className="text-sm text-gray-300 mb-2 max-w-md mx-auto">
+              Para comenzar tu preparación con la <strong className="text-blue-300">Metodología Mastery Loop</strong>, primero necesitas un diagnóstico de tu nivel actual en los 5 pilares SMRP.
+            </p>
+            <p className="text-xs text-gray-400 mb-6">
+              Examen de 110 preguntas · 2.5 horas · Resultado inmediato por pilar
+            </p>
+            <Link
+              href="/exam/new"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-blue-600/30"
+            >
+              <span>📋</span> Iniciar Diagnóstico Inicial
+            </Link>
+            <p className="text-xs text-gray-500 mt-3">
+              Este examen determina tu plan de estudio personalizado
+            </p>
+          </div>
         </div>
       )}
     </div>

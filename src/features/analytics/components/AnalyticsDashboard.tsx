@@ -35,18 +35,28 @@ export async function AnalyticsDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <RadarChart pillarAverages={data.pillarAverages} />
         <div className="bg-surface border border-border rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Promedio por Pilar</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-4">Reforzamiento por Pilar</h3>
           <div className="space-y-3">
             {data.pillarAverages.map((p) => (
               <div key={p.code}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-foreground-secondary truncate pr-2">{p.name}</span>
-                  <span
-                    className="text-xs font-semibold shrink-0"
-                    style={{ color: p.average >= 70 ? '#22c55e' : p.average >= 50 ? '#f59e0b' : '#ef4444' }}
-                  >
-                    {p.average}%
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span
+                      className="text-xs font-semibold"
+                      style={{ color: p.average >= 70 ? '#22c55e' : p.average >= 50 ? '#f59e0b' : '#ef4444' }}
+                    >
+                      {p.average}%
+                    </span>
+                    {p.attempts > 0 && p.average < 70 && (
+                      <Link
+                        href={`/exam/mini/${p.code}`}
+                        className="text-[10px] bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-1.5 py-0.5 rounded"
+                      >
+                        Reforzar →
+                      </Link>
+                    )}
+                  </div>
                 </div>
                 <div className="h-2 rounded-full bg-border overflow-hidden">
                   <div
@@ -62,6 +72,14 @@ export async function AnalyticsDashboard() {
                 )}
               </div>
             ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-border flex gap-2">
+            <Link href="/flashcards" className="flex-1 text-center text-xs text-blue-400 hover:text-blue-300 py-2 bg-blue-600/10 rounded-lg">
+              📇 Ver Flashcards
+            </Link>
+            <Link href="/study-plan" className="flex-1 text-center text-xs text-foreground-secondary hover:text-foreground py-2 bg-surface-hover rounded-lg">
+              📅 Plan de Estudio
+            </Link>
           </div>
         </div>
       </div>

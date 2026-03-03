@@ -55,5 +55,15 @@ export default async function ResultsPage({ params }: Props) {
 
   const results = buildExamResults(session as ExamSession, normalizedAnswers)
 
+  // Auto-generar flashcards desde respuestas incorrectas (fire & forget)
+  const wrongCount = normalizedAnswers.filter(a => a.is_correct === false).length
+  if (wrongCount > 0) {
+    fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/api/flashcards/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    }).catch(() => {/* non-blocking */})
+  }
+
   return <ExamResults results={results} />
 }

@@ -17,12 +17,18 @@ const navItems: NavItem[] = [
   { href: '/tutor', label: 'Tutor IA', icon: BrainIcon },
   { href: '/analytics', label: 'Mi Progreso', icon: ChartBarIcon },
   { href: '/study-plan', label: 'Plan de Estudio', icon: CalendarIcon },
+  { href: '/flashcards', label: 'Flashcards', icon: CardIcon },
+]
+
+const adminItems: NavItem[] = [
+  { href: '/admin/questions', label: 'Banco de Preguntas', icon: DatabaseIcon },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const [userName, setUserName] = useState<string>('')
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -31,10 +37,11 @@ export function Sidebar() {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('full_name')
+          .select('full_name, role')
           .eq('id', user.id)
           .single()
         setUserName(profile?.full_name || user.email?.split('@')[0] || 'Usuario')
+        setIsAdmin(profile?.role === 'admin')
       }
     }
     fetchUser()
@@ -77,29 +84,15 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href ||
-            (item.href !== '/dashboard' && pathname.startsWith(item.href))
-          const Icon = item.icon
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl
-                transition-all duration-200
-                ${isActive
-                  ? 'bg-blue-600/20 text-blue-400 border border-blue-600/30'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                }
-              `}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
-            </Link>
-          )
-        })}
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {navItems.map((item) => <NavLink key={item.href} item={item} pathname={pathname} />)}
+
+        {isAdmin && (
+          <>
+            <p className="text-[10px] uppercase tracking-wider text-gray-600 px-4 pt-4 pb-1">Admin</p>
+            {adminItems.map((item) => <NavLink key={item.href} item={item} pathname={pathname} />)}
+          </>
+        )}
       </nav>
 
       {/* Logout */}
@@ -113,6 +106,28 @@ export function Sidebar() {
         </button>
       </div>
     </aside>
+  )
+}
+
+function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
+  const isActive = pathname === item.href ||
+    (item.href !== '/dashboard' && pathname.startsWith(item.href))
+  const Icon = item.icon
+  return (
+    <Link
+      href={item.href}
+      className={`
+        flex items-center gap-3 px-4 py-3 rounded-xl
+        transition-all duration-200
+        ${isActive
+          ? 'bg-blue-600/20 text-blue-400 border border-blue-600/30'
+          : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+        }
+      `}
+    >
+      <Icon className="w-5 h-5" />
+      <span className="font-medium">{item.label}</span>
+    </Link>
   )
 }
 
@@ -145,6 +160,22 @@ function ChartBarIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  )
+}
+
+function CardIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+    </svg>
+  )
+}
+
+function DatabaseIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
     </svg>
   )
 }
