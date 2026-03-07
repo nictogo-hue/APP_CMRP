@@ -131,13 +131,8 @@ export function TutorChat({ initialTopic }: { initialTopic?: string }) {
                 )
               }
             } catch { /* ignorar tramas malformadas */ }
-          } else {
-            // Fallback para texto plano (toTextStreamResponse)
-            accumulated += line
-            setMessages(prev =>
-              prev.map(m => m.id === assistantId ? { ...m, text: accumulated } : m)
-            )
           }
+          // Las líneas d:{}, e:{} son metadata del protocolo — se ignoran
         }
       }
     } catch (err) {
