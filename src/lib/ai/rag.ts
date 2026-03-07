@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import { createClient as createDirectClient } from '@supabase/supabase-js'
 import { generateEmbedding } from './embeddings'
 
@@ -21,6 +20,8 @@ export async function findRelevantChunks(
   threshold = 0.4,
   limit = 6
 ): Promise<RelevantChunk[]> {
+  // Importar dinámicamente para evitar problemas en el build de Edge Runtime
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
   const queryEmbedding = await generateEmbedding(query)
