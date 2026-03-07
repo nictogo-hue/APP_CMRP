@@ -121,6 +121,8 @@ export function TutorChat({ initialTopic }: { initialTopic?: string }) {
         if (done) break
         const chunk = decoder.decode(value, { stream: true })
         for (const line of chunk.split('\n')) {
+          if (!line.trim()) continue
+
           if (line.startsWith('0:')) {
             try {
               const parsed = JSON.parse(line.slice(2))
@@ -130,7 +132,13 @@ export function TutorChat({ initialTopic }: { initialTopic?: string }) {
                   prev.map(m => m.id === assistantId ? { ...m, text: accumulated } : m)
                 )
               }
-            } catch { /* ignorar líneas malformadas */ }
+            } catch { /* ignorar tramas malformadas */ }
+          } else {
+            // Fallback para texto plano (toTextStreamResponse)
+            accumulated += line
+            setMessages(prev =>
+              prev.map(m => m.id === assistantId ? { ...m, text: accumulated } : m)
+            )
           }
         }
       }

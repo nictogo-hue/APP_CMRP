@@ -17,10 +17,10 @@ export function TutorExplainer({
   userAnswer,
   explanation,
 }: TutorExplainerProps) {
-  const [isOpen, setIsOpen]     = useState(false)
-  const [text, setText]         = useState('')
-  const [loading, setLoading]   = useState(false)
-  const abortRef                = useRef<AbortController | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
+  const [text, setText] = useState('')
+  const [loading, setLoading] = useState(false)
+  const abortRef = useRef<AbortController | null>(null)
 
   async function handleAsk() {
     if (loading) return
@@ -52,6 +52,8 @@ export function TutorExplainer({
         // Parse text/plain stream chunks
         const lines = chunk.split('\n')
         for (const line of lines) {
+          if (!line.trim()) continue
+
           if (line.startsWith('0:')) {
             // AI SDK text stream format: 0:"text"
             try {
@@ -60,6 +62,9 @@ export function TutorExplainer({
             } catch {
               // ignore malformed chunks
             }
+          } else {
+            // Fallback para texto plano
+            setText((prev) => prev + line)
           }
         }
       }
