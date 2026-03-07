@@ -25,6 +25,14 @@ Responde en español. Usa terminología técnica correcta. Sé preciso y pedagó
 
 ${context ? `Usa este contexto técnico para tu respuesta:\n${context}` : 'Responde con tu conocimiento general de CMRP SMRP.'}`
 
+    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      console.error('ERROR: GOOGLE_GENERATIVE_AI_API_KEY is missing in production')
+      return new Response(
+        JSON.stringify({ error: 'Configuración incompleta: GOOGLE_GENERATIVE_AI_API_KEY no encontrada en Vercel.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
     const result = streamText({
       model: google(MODELS.chat),
       system: systemPrompt,
@@ -33,9 +41,13 @@ ${context ? `Usa este contexto técnico para tu respuesta:\n${context}` : 'Respo
 
     return result.toTextStreamResponse()
   } catch (error) {
-    console.error('Chat API Error:', error)
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error('Chat API Error:', errorMsg)
     return new Response(
-      JSON.stringify({ error: 'Hubo un error procesando tu consulta.' }),
+      JSON.stringify({
+        error: 'Hubo un error procesando tu consulta.',
+        details: errorMsg
+      }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     )
   }

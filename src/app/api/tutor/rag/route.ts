@@ -9,6 +9,17 @@ export async function POST(request: NextRequest) {
     const { query } = await request.json() as { query: string }
     if (!query?.trim()) return NextResponse.json({ context: '', sources: [], found: false })
 
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('ERROR: Supabase config missing in production')
+      return NextResponse.json({
+        context: '',
+        sources: [],
+        found: false,
+        error: true,
+        details: 'Configuración de Supabase incompleta en Vercel.'
+      })
+    }
+
     // Usar la versión Edge para evitar problemas con cookies en Vercel
     const chunks = await findRelevantChunksEdge(query.trim(), 0.35, 5)
 
@@ -21,7 +32,14 @@ export async function POST(request: NextRequest) {
       found: chunks.length > 0
     })
   } catch (err) {
-    console.error('RAG Route Error:', err)
-    return NextResponse.json({ context: '', sources: [], found: false, error: true })
+    const errorMsg = err instanceof Error ? err.message : String(err)
+    console.error('RAG Route Error:', errorMsg)
+    return NextResponse.json({
+      context: '',
+      sources: [],
+      found: false,
+      error: true,
+      details: errorMsg
+    })
   }
 }
