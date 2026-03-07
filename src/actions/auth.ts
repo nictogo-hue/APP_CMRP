@@ -23,13 +23,25 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signUp({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const examDate = formData.get('exam_date') as string | null
+  const studyHours = formData.get('study_hours_per_day') as string | null
+
+  const { data, error } = await supabase.auth.signUp({ email, password })
 
   if (error) {
     return { error: error.message }
+  }
+
+  if (data.user) {
+    await supabase.from('profiles').upsert({
+      id: data.user.id,
+      email,
+      exam_date: examDate || null,
+      study_hours_per_day: studyHours ? parseFloat(studyHours) : 1.5,
+      updated_at: new Date().toISOString(),
+    })
   }
 
   revalidatePath('/', 'layout')

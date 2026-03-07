@@ -10,6 +10,8 @@ export interface StudyDay {
   durationMinutes: number
   isToday: boolean
   isPast: boolean
+  topicKey: string        // unique key for tracking progress
+  isCompleted?: boolean   // true if marked as studied
 }
 
 export interface StudyWeek {

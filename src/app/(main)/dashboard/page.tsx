@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getAnalyticsData } from '@/features/analytics/services/analyticsService'
+import { ReportButton, ClearHistoryButton } from '@/features/analytics/components/HistorialActions'
 
 export const metadata = { title: 'Dashboard | CMRP Mastery' }
 
@@ -12,11 +13,12 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name')
+    .select('full_name, role')
     .eq('id', user.id)
     .single()
 
   const userName = profile?.full_name || user.email?.split('@')[0] || 'Usuario'
+  const isAdmin = profile?.role === 'admin'
   const analytics = await getAnalyticsData()
 
   const hour = new Date().getHours()
@@ -70,7 +72,7 @@ export default async function DashboardPage() {
             <p className="text-sm font-medium text-yellow-300">Área de mejora detectada</p>
             <p className="text-sm text-yellow-200/70 mt-0.5">
               Tu pilar más débil es <strong className="text-yellow-300">{analytics.weakestPillar}</strong>.
-              Consulta al Tutor IA para reforzarlo.
+              Revisa tu plan de estudio para reforzarlo.
             </p>
           </div>
         </div>
@@ -83,7 +85,7 @@ export default async function DashboardPage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <QuickAction href="/exam/new" icon="📋" title="Simulacro" description="110 preguntas · 150 min" primary />
-          <QuickAction href="/tutor" icon="🤖" title="Tutor IA" description="RAG sobre 22 libros CMRP" />
+          <QuickAction href="/study-plan" icon="📅" title="Plan de Estudio" description="Adaptado a tus pilares" />
           <QuickAction href="/flashcards" icon="📇" title="Flashcards" description="Repetición espaciada SM-2" />
           <QuickAction href="/analytics" icon="📊" title="Mi Progreso" description="Análisis por 5 pilares" />
         </div>
@@ -96,9 +98,12 @@ export default async function DashboardPage() {
             <h2 className="text-sm font-semibold text-foreground-secondary uppercase tracking-wider">
               Últimos exámenes
             </h2>
-            <Link href="/analytics" className="text-xs text-blue-400 hover:text-blue-300">
-              Ver todo →
-            </Link>
+            <div className="flex items-center gap-3">
+              {isAdmin && <ClearHistoryButton />}
+              <Link href="/analytics" className="text-xs text-blue-400 hover:text-blue-300">
+                Ver todo →
+              </Link>
+            </div>
           </div>
           <div className="space-y-2">
             {analytics.history.slice(0, 5).map((exam) => {
@@ -121,6 +126,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
+                    <ReportButton sessionId={exam.id} />
                     <span className={`text-lg font-bold ${exam.passed ? 'text-green-400' : 'text-red-400'}`}>
                       {exam.score}%
                     </span>

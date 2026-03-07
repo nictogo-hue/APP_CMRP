@@ -50,54 +50,100 @@ const PILLAR_NAMES_SHORT: Record<PillarCode, string> = {
   '5.0': 'Administración del Trabajo',
 }
 
+// ─── Config interface ─────────────────────────────────────────
+
+export interface StudyPlanConfig {
+  pillarAverages: PillarStat[]
+  examDate?: Date | null
+  studyHoursPerDay?: number | null
+  completedTopics?: string[]
+  anchorDate?: Date
+}
+
 // ─── Lógica principal ─────────────────────────────────────────
 
 /**
- * Genera un plan de 4 semanas (28 días) basado en los promedios
- * por pilar. Los pilares más débiles reciben más días de estudio.
+ * Genera un plan de estudio dinámico basado en la fecha de examen
+ * y horas de estudio disponibles por día. Si no hay fecha de examen,
+ * usa 28 días como fallback.
  */
 export function generateStudyPlan(
-  pillarAverages: PillarStat[],
-  anchorDate: Date = new Date(),
+  pillarAveragesOrConfig: PillarStat[] | StudyPlanConfig,
+  anchorDateArg: Date = new Date(),
 ): StudyPlan {
+  // Support both old signature (array) and new (config object)
+  let pillarAverages: PillarStat[]
+  let examDate: Date | null = null
+  let studyHoursPerDay = 1.5
+  let completedTopics: string[] = []
+  let anchorDate = anchorDateArg
+
+  if (Array.isArray(pillarAveragesOrConfig)) {
+    pillarAverages = pillarAveragesOrConfig
+  } else {
+    pillarAverages = pillarAveragesOrConfig.pillarAverages
+    examDate = pillarAveragesOrConfig.examDate ?? null
+    studyHoursPerDay = pillarAveragesOrConfig.studyHoursPerDay ?? 1.5
+    completedTopics = pillarAveragesOrConfig.completedTopics ?? []
+    anchorDate = pillarAveragesOrConfig.anchorDate ?? anchorDateArg
+  }
+
   // Normaliza anchor al inicio del día
   const startDate = new Date(anchorDate)
   startDate.setHours(0, 0, 0, 0)
 
-  // Distribuye días según debilidad (más días al pilar con menor score)
-  const orderedPillars = buildPillarSchedule(pillarAverages)
+  // Calcular días hasta el examen (mínimo 7, máximo 180)
+  let totalDays = 28
+  if (examDate) {
+    const examDateNorm = new Date(examDate)
+    examDateNorm.setHours(0, 0, 0, 0)
+    const diffMs = examDateNorm.getTime() - startDate.getTime()
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    totalDays = Math.max(7, Math.min(180, diffDays))
+  }
 
-  // Genera los 28 días (4 semanas × 7 días)
+  // Duración de sesión según horas de estudio
+  const durationMinutes = Math.round(studyHoursPerDay * 60)
+
+  // Distribuye días según debilidad
+  const totalStudyDays = countStudyDays(totalDays)
+  const orderedPillars = buildPillarSchedule(pillarAverages, totalStudyDays)
+
+  // Genera todos los días
   const allDays: StudyDay[] = []
   let pillarIndex = 0
-  let topicCounters: Record<PillarCode, number> = {
+  const topicCounters: Record<PillarCode, number> = {
     '1.0': 0, '2.0': 0, '3.0': 0, '4.0': 0, '5.0': 0,
   }
 
-  for (let i = 0; i < 28; i++) {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  for (let i = 0; i < totalDays; i++) {
     const date = new Date(startDate)
     date.setDate(startDate.getDate() + i)
 
     const dayOfWeek = i % 7 // 0=Lun … 6=Dom
-
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
     const isToday = date.getTime() === today.getTime()
     const isPast = date < today
 
     if (dayOfWeek === 5) {
       // Sábado — simulacro
+      const topicKey = `exam_week${Math.floor(i / 7) + 1}_day${i + 1}`
       allDays.push({
         dayNumber: i + 1,
         date,
         type: 'exam',
         topic: 'Simulacro de práctica CMRP',
-        durationMinutes: 60,
+        durationMinutes: Math.min(durationMinutes, 150),
         isToday,
         isPast,
+        topicKey,
+        isCompleted: completedTopics.includes(topicKey),
       })
     } else if (dayOfWeek === 6) {
       // Domingo — descanso
+      const topicKey = `rest_week${Math.floor(i / 7) + 1}_day${i + 1}`
       allDays.push({
         dayNumber: i + 1,
         date,
@@ -106,6 +152,8 @@ export function generateStudyPlan(
         durationMinutes: 0,
         isToday,
         isPast,
+        topicKey,
+        isCompleted: completedTopics.includes(topicKey),
       })
     } else {
       // Lunes–Viernes — estudio
@@ -115,6 +163,7 @@ export function generateStudyPlan(
       topicCounters[pillarCode]++
       pillarIndex++
 
+      const topicKey = `study_p${pillarCode}_w${Math.floor(i / 7) + 1}_d${i + 1}`
       allDays.push({
         dayNumber: i + 1,
         date,
@@ -122,16 +171,19 @@ export function generateStudyPlan(
         pillarCode,
         pillarName: PILLAR_NAMES_SHORT[pillarCode],
         topic,
-        durationMinutes: 45,
+        durationMinutes,
         isToday,
         isPast,
+        topicKey,
+        isCompleted: completedTopics.includes(topicKey),
       })
     }
   }
 
   // Agrupa en semanas
+  const numWeeks = Math.ceil(totalDays / 7)
   const weeks: StudyWeek[] = []
-  for (let w = 0; w < 4; w++) {
+  for (let w = 0; w < numWeeks; w++) {
     const weekDays = allDays.slice(w * 7, w * 7 + 7)
     const studyPillars = weekDays
       .filter(d => d.type === 'study')
@@ -147,36 +199,44 @@ export function generateStudyPlan(
   }
 
   const endDate = new Date(startDate)
-  endDate.setDate(startDate.getDate() + 27)
+  endDate.setDate(startDate.getDate() + totalDays - 1)
 
-  const today2 = new Date()
-  today2.setHours(0, 0, 0, 0)
-  const diffMs = today2.getTime() - startDate.getTime()
-  const daysCompleted = Math.max(0, Math.min(28, Math.floor(diffMs / (1000 * 60 * 60 * 24))))
+  const diffMs = today.getTime() - startDate.getTime()
+  const daysCompleted = Math.max(0, Math.min(totalDays, Math.floor(diffMs / (1000 * 60 * 60 * 24))))
 
   return {
     weeks,
     startDate,
     endDate,
-    totalDays: 28,
+    totalDays,
     daysCompleted,
-    daysRemaining: Math.max(0, 28 - daysCompleted),
+    daysRemaining: Math.max(0, totalDays - daysCompleted),
   }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────
+
+function countStudyDays(totalDays: number): number {
+  let count = 0
+  for (let i = 0; i < totalDays; i++) {
+    const dayOfWeek = i % 7
+    if (dayOfWeek !== 5 && dayOfWeek !== 6) count++
+  }
+  return count
 }
 
 /**
  * Construye una lista ordenada de pilares para asignar a días de estudio.
- * Los pilares más débiles aparecen más veces (20 slots para 5 días/semana × 4 semanas).
+ * Los pilares más débiles aparecen más veces.
  */
-function buildPillarSchedule(pillarAverages: PillarStat[]): PillarCode[] {
+function buildPillarSchedule(pillarAverages: PillarStat[], totalStudyDays: number): PillarCode[] {
   const CODES: PillarCode[] = ['1.0', '2.0', '3.0', '4.0', '5.0']
-  const TOTAL_STUDY_DAYS = 20 // 5 días × 4 semanas
 
   // Si no hay datos, distribuye equitativamente
   const hasData = pillarAverages.some(p => p.attempts > 0)
   if (!hasData) {
     const schedule: PillarCode[] = []
-    for (let i = 0; i < TOTAL_STUDY_DAYS; i++) {
+    for (let i = 0; i < totalStudyDays; i++) {
       schedule.push(CODES[i % 5])
     }
     return schedule
@@ -185,25 +245,30 @@ function buildPillarSchedule(pillarAverages: PillarStat[]): PillarCode[] {
   // Score inverso: pilares con menor average reciben más peso
   const sorted = [...pillarAverages].sort((a, b) => a.average - b.average)
 
-  // Pesos: el más débil = 5 slots, el segundo = 4, …, el más fuerte = 2
-  const weights = [5, 4, 4, 4, 3]
+  // Distribuye proporcionalmente: más débil = más slots
+  const totalWeight = 5 + 4 + 4 + 4 + 3 // 20
+  const baseWeights = [5, 4, 4, 4, 3]
   const schedule: PillarCode[] = []
 
   sorted.forEach((p, idx) => {
     const code = p.code as PillarCode
-    const count = weights[idx] ?? 2
-    for (let j = 0; j < count; j++) {
+    const slots = Math.round((baseWeights[idx] / totalWeight) * totalStudyDays)
+    for (let j = 0; j < slots; j++) {
       schedule.push(code)
     }
   })
 
+  // Fill any gap due to rounding
+  while (schedule.length < totalStudyDays) {
+    schedule.push(sorted[0].code as PillarCode)
+  }
+
   // Intercala para que no queden pilares agrupados
-  return interleave(schedule)
+  return interleave(schedule).slice(0, totalStudyDays)
 }
 
 function interleave(arr: PillarCode[]): PillarCode[] {
   const result: PillarCode[] = []
-  const seen = new Set<PillarCode>()
   const remaining = [...arr]
 
   while (remaining.length > 0) {
@@ -214,7 +279,6 @@ function interleave(arr: PillarCode[]): PillarCode[] {
     } else {
       result.push(remaining.splice(idx, 1)[0])
     }
-    seen.add(result[result.length - 1])
   }
 
   return result

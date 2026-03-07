@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { ExamResults, AnswerLetter } from '../types'
 import { EXAM_CONSTANTS } from '../types'
-import { TutorExplainer } from '@/features/tutor/components/TutorExplainer'
 
 const ANSWER_LABELS: Record<AnswerLetter, string> = {
   A: 'option_a',
@@ -231,16 +230,6 @@ export function ExamResults({ results }: ExamResultsProps) {
                       )}
                     </div>
 
-                    {/* Tutor IA */}
-                    {answer.selected_answer && (
-                      <TutorExplainer
-                        questionText={q.question_text}
-                        options={{ a: q.option_a, b: q.option_b, c: q.option_c, d: q.option_d }}
-                        correctAnswer={q.correct_answer.toLowerCase()}
-                        userAnswer={answer.selected_answer.toLowerCase()}
-                        explanation={q.explanation ?? undefined}
-                      />
-                    )}
                   </div>
                 )
               })}

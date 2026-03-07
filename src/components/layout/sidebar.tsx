@@ -14,7 +14,6 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: HomeIcon },
   { href: '/exam/new', label: 'Simulacro CMRP', icon: ClipboardIcon },
-  { href: '/tutor', label: 'Tutor IA', icon: BrainIcon },
   { href: '/analytics', label: 'Mi Progreso', icon: ChartBarIcon },
   { href: '/study-plan', label: 'Plan de Estudio', icon: CalendarIcon },
   { href: '/flashcards', label: 'Flashcards', icon: CardIcon },
