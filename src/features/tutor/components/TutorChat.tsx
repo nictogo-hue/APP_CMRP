@@ -205,6 +205,7 @@ export function TutorChat({ initialTopic }: { initialTopic?: string }) {
             <p className="text-sm text-foreground-secondary max-w-xs mb-8">
               Pregúntame sobre cualquier concepto del cuerpo de conocimiento SMRP.
               Busco primero en tus <strong className="text-foreground">22 libros indexados</strong> antes de responder.
+              <br /><span className="text-[10px] opacity-50">v1.0.1 - Edge Ready</span>
             </p>
             <div className="w-full max-w-sm space-y-2">
               {STARTER_QUESTIONS.map((q) => (
