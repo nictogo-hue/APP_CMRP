@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 export async function POST(request: NextRequest) {
   try {
     const { messages, context } = await request.json() as {
-      messages: UIMessage[]
+      messages: { role: 'user' | 'assistant', content: string }[]
       context?: string
     }
 

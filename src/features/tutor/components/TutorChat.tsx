@@ -79,10 +79,8 @@ export function TutorChat({ initialTopic }: { initialTopic?: string }) {
 
     // Construir historial para la API ANTES de actualizar el estado
     const apiMessages = [...messages, userMsg].map(m => ({
-      id: m.id,
       role: m.role as 'user' | 'assistant',
-      parts: [{ type: 'text' as const, text: m.text }],
-      metadata: {} as Record<string, unknown>,
+      content: m.text,
     }))
 
     setMessages(prev => [...prev, userMsg])
