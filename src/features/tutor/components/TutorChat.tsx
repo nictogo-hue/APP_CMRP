@@ -119,10 +119,20 @@ export function TutorChat({ initialTopic }: { initialTopic?: string }) {
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        accumulated += decoder.decode(value, { stream: true })
-        setMessages(prev =>
-          prev.map(m => m.id === assistantId ? { ...m, text: accumulated } : m)
-        )
+        const chunk = decoder.decode(value, { stream: true })
+        for (const line of chunk.split('\n')) {
+          if (line.startsWith('0:')) {
+            try {
+              const parsed = JSON.parse(line.slice(2))
+              if (typeof parsed === 'string') {
+                accumulated += parsed
+                setMessages(prev =>
+                  prev.map(m => m.id === assistantId ? { ...m, text: accumulated } : m)
+                )
+              }
+            } catch { /* ignorar líneas malformadas */ }
+          }
+        }
       }
     } catch (err) {
       console.error('Chat error:', err)
