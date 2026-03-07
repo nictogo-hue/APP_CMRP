@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { streamText } from 'ai'
 import { google, MODELS } from '@/lib/ai/google'
-import { findRelevantChunks, formatContext } from '@/lib/ai/rag'
+import { findRelevantChunksEdge, formatContext } from '@/lib/ai/rag'
 
 export const runtime = 'edge'
 
@@ -19,15 +19,16 @@ export async function POST(request: NextRequest) {
     return new Response('Missing required fields', { status: 400 })
   }
 
-  // RAG con timeout de 5s
+  // RAG Edge-compatible (sin cookies) con timeout de 3s
   const searchQuery = `${questionText} ${options[correctAnswer as keyof typeof options] ?? ''}`
   let context = ''
   try {
-    const ragPromise = findRelevantChunks(searchQuery, 0.35, 5)
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('RAG timeout')), 5000)
-    )
-    const chunks = await Promise.race([ragPromise, timeoutPromise])
+    const chunks = await Promise.race([
+      findRelevantChunksEdge(searchQuery, 0.35, 5),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('RAG timeout')), 3000)
+      ),
+    ])
     context = formatContext(chunks)
   } catch {
     context = ''

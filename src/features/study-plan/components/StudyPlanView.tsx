@@ -146,6 +146,26 @@ function DayRow({ day }: { day: StudyDay }) {
         </span>
       )}
 
+      {/* Botón estudiar */}
+      {day.type === 'study' && !day.isPast && (
+        <Link
+          href={`/tutor?topic=${encodeURIComponent(day.topic)}`}
+          className="text-[11px] text-blue-400 hover:text-blue-300 shrink-0 px-2 py-1 bg-blue-600/10 hover:bg-blue-600/20 rounded-lg transition-colors"
+        >
+          Estudiar →
+        </Link>
+      )}
+
+      {/* Botón simulacro */}
+      {day.type === 'exam' && !day.isPast && (
+        <Link
+          href="/exam/new"
+          className="text-[11px] text-purple-400 hover:text-purple-300 shrink-0 px-2 py-1 bg-purple-600/10 hover:bg-purple-600/20 rounded-lg transition-colors"
+        >
+          Iniciar →
+        </Link>
+      )}
+
       {/* Check si pasó */}
       {day.isPast && (
         <span className="text-green-500 text-sm shrink-0">✓</span>
