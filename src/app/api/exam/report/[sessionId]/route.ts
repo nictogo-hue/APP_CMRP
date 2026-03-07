@@ -163,7 +163,7 @@ export async function GET(
 
     doc.font('Helvetica-Bold').fontSize(9)
       .fillColor(correct ? '#166534' : '#991b1b')
-      .text(`${idx + 1}. [${correct ? '✓' : '✗'}] ${q.question_text}`, { width: 500 })
+      .text(`${idx + 1}. [${correct ? 'OK' : 'X'}] ${q.question_text}`, { width: 500 })
 
     doc.font('Helvetica').fontSize(8).fillColor('#374151')
     if (!correct) {

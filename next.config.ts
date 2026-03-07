@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   experimental: {
     mcpServer: true,
   },
+  // pdfkit usa fs y require dinámico — no bundlear con webpack
+  serverExternalPackages: ['pdfkit'],
 }
 
 export default nextConfig
