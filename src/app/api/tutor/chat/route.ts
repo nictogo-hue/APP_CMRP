@@ -14,6 +14,10 @@ export async function POST(request: NextRequest) {
       context?: string
     }
 
+    console.log('[TutorChat] POST received. Messages:', messages?.length)
+    console.log('[TutorChat] API Key exists:', !!process.env.GOOGLE_GENERATIVE_AI_API_KEY)
+    console.log('[TutorChat] Model:', MODELS.chat)
+
     if (!messages?.length) {
       return new Response('Missing messages', { status: 400 })
     }
